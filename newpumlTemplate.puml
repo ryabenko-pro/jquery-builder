@@ -1,0 +1,4 @@
+@startuml
+User -> Service
+Service2 -> User : Return
+@enduml

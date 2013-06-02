@@ -9,23 +9,34 @@ function FormBuilder(params, templater) {
       tag: 'input',
       attr: {type: 'text'}
     }, 
+    integer: {
+      tag: 'input',
+      attr: {type: 'text', 'data-type': 'integer'}
+    }, 
+    boolean: {
+      tag: 'select',
+      'options': {
+        'true': 'TRUE',
+        'false': 'FALSE'
+      }
+    }, 
     textarea: {
-      tag: 'textarea',
+      tag: 'textarea'
     }
   };
-}
+};
 
 /**
  * Строим HTML представление формы
  */
-FormBuilder.prototype.buildForm = function(add_listener) {
+FormBuilder.prototype.buildForm = function(impl, add_listener) {
   this.paramNodes = {};
   this.rootNode = $('<div></div>');
   
   var param;
   for (var p in this.params) {
     param = this.params[p];
-    this.addParam(param);
+    this.addParam(impl, param);
   }
   
   var ok = $('<input type="button" value="Добавить" />');
@@ -37,7 +48,9 @@ FormBuilder.prototype.buildForm = function(add_listener) {
   }(this, this.rootNode));
   this.rootNode.append(ok);
   
-  this.rootNode.dialog();
+  this.rootNode.dialog({
+    modal: true
+  });
 }
 
 FormBuilder.prototype.getValues = function() {
@@ -47,9 +60,9 @@ FormBuilder.prototype.getValues = function() {
   }
   
   return values;
-}
+};
 
-FormBuilder.prototype.addParam = function(param) {
+FormBuilder.prototype.addParam = function(impl, param) {
   var type = this.types[param.type];
   if (!type) {
     alert('No type "' + param.type + '"');
@@ -64,7 +77,18 @@ FormBuilder.prototype.addParam = function(param) {
   this.rootNode.append(label);
   
   var node = $('<' + type.tag + ' ' + attr.join(' ') + ' />');
+  if ('select' === type.tag) {
+    for (var o in type.options) {
+      node.append('<option value="' + o + '">' + type.options[o] + "</option>");
+    }
+  }
+  if (impl.values[param.name]) {
+    node.val(impl.values[param.name]);
+  }
+  
   this.rootNode.append(node);
   
+  this.rootNode.find('[data-type=integer]').spinner();
+  
   this.paramNodes[param.name] = node;
-}
+};

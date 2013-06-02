@@ -19,3 +19,17 @@ Builder.prototype.addPluginImpl = function(impl) {
   if (this.addPluginImplListener)
     this.addPluginImplListener(impl);
 }
+
+Builder.prototype.editPluginImpl = function(impl) {
+  this.pluginImpls[impl.id] = impl;
+
+  if (this.editPluginImplListener)
+    this.editPluginImplListener(impl);
+}
+
+Builder.prototype.deletePluginImpl = function(impl) {
+  this.pluginImpls[impl.id] = null;
+
+  if (this.deletePluginImplListener)
+    this.deletePluginImplListener(impl);
+}

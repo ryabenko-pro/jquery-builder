@@ -9,14 +9,17 @@ function PluginImpl(id, plugin, name, values) {
 }
 
 PluginImpl.prototype.render = function() {
-  var template = this.plugin.templateJs;
-  
-  var value;
-  for (var p in this.values) {
-    value = this.values[p];
-//    template = template.replace('%' + value.name + '%', value.value)
-    template = template.replace('%' + p + '%', value)
+  if (this.plugin.renderer) {
+    return this.plugin.renderer(this.values);
+  } else {
+    var template = this.plugin.templateJs;
+
+    var value;
+    for (var p in this.values) {
+      value = this.values[p];
+      template = template.replace('%' + p + '%', value)
+    }
+
+    return template.replace(/\</g, '&lt;').replace(/\>/g, '&gt;');
   }
-  
-  return template.replace(/\</g, '&lt;').replace(/\>/g, '&gt;');
 }
